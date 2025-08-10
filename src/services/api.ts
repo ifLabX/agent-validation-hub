@@ -105,13 +105,14 @@ export const api = {
     if (USE_MOCKS) {
       const jobs = storage.read<CrawlJob[]>(MOCK.jobsKey, []);
       // 模拟进度
-      const updated = jobs.map((j) => {
+      const updated = jobs.map((j): CrawlJob => {
         if (j.status === "running") {
           const progress = Math.min(100, j.progress + Math.ceil(Math.random() * 15));
+          const status: CrawlJob["status"] = progress >= 100 ? "completed" : "running";
           return {
             ...j,
             progress,
-            status: progress >= 100 ? "completed" : "running",
+            status,
           };
         }
         return j;
@@ -168,10 +169,11 @@ export const api = {
   async listTestRuns(): Promise<TestRun[]> {
     if (USE_MOCKS) {
       const runs = storage.read<TestRun[]>(MOCK.runsKey, []);
-      const updated = runs.map((r) => {
+      const updated = runs.map((r): TestRun => {
         if (r.status === "running") {
           const progress = Math.min(100, r.progress + Math.ceil(Math.random() * 20));
-          return { ...r, progress, status: progress >= 100 ? "completed" : "running" };
+          const status: TestRun["status"] = progress >= 100 ? "completed" : "running";
+          return { ...r, progress, status };
         }
         return r;
       });
