@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { api, AgentConfig } from "@/services/api";
+import { api, Agent, TaskKind } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AgentsPage() {

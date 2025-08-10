@@ -5,18 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { api, DatasetItem } from "@/services/api";
+import { api, Dataset, TaskKind } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
-const categories = ["general", "finance", "medical", "other"];
+const taskTypes: TaskKind[] = ["intent", "ner", "t2sql", "e2e", "mixed"];
 
 export default function DatasetsPage() {
   const { toast } = useToast();
   const { data: datasets = [], refetch } = useQuery({ queryKey: ["datasets"], queryFn: api.listDatasets });
-  const [editing, setEditing] = useState<DatasetItem | null>(null);
+  const [editing, setEditing] = useState<Dataset | null>(null);
 
   const mutate = useMutation({
-    mutationFn: api.updateDataset,
+    mutationFn: api.saveDataset,
     onSuccess: () => {
       toast({ title: "已保存" });
       setEditing(null);
@@ -34,11 +34,12 @@ export default function DatasetsPage() {
             <Card key={d.id} className="p-4 hover:shadow-md transition-smooth">
               {editing?.id === d.id ? (
                 <div className="space-y-3">
-                  <Input value={editing.content} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
-                  <Select value={editing.category} onValueChange={(v) => setEditing({ ...editing!, category: v })}>
-                    <SelectTrigger className="w-40"><SelectValue placeholder="选择分类" /></SelectTrigger>
+                  <Input placeholder="数据集名称" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
+                  <Input placeholder="描述" value={editing.description || ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
+                  <Select value={editing.task_type} onValueChange={(v) => setEditing({ ...editing!, task_type: v as TaskKind })}>
+                    <SelectTrigger className="w-40"><SelectValue placeholder="选择任务类型" /></SelectTrigger>
                     <SelectContent>
-                      {categories.map((c) => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
+                      {taskTypes.map((c) => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
                     </SelectContent>
                   </Select>
                   <div className="flex gap-2">
@@ -49,8 +50,8 @@ export default function DatasetsPage() {
               ) : (
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <div className="font-medium">{d.content}</div>
-                    <div className="text-xs text-muted-foreground">分类：{d.category || "未分类"}</div>
+                    <div className="font-medium">{d.name}</div>
+                    <div className="text-xs text-muted-foreground">任务类型：{d.task_type}{d.description ? ` · ${d.description}` : ''}</div>
                   </div>
                   <Button size="sm" onClick={() => setEditing(d)}>编辑</Button>
                 </div>
