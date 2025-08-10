@@ -26,7 +26,7 @@ export default function TestRunsPage() {
           <Select value={datasetId} onValueChange={setDatasetId}>
             <SelectTrigger className="w-56"><SelectValue placeholder="选择数据集" /></SelectTrigger>
             <SelectContent>
-              {datasets.map((d) => (<SelectItem key={d.id} value={d.id}>{d.content.slice(0,20)}</SelectItem>))}
+              {datasets.map((d) => (<SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>))}
             </SelectContent>
           </Select>
           <Select value={agentId} onValueChange={setAgentId}>
